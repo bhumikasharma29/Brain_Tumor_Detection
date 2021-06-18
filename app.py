@@ -96,6 +96,25 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/preprocess', methods=['GET', 'POST'])
+def crop():
+    if request.method == 'POST':
+        # Get the file from post request
+        f = request.files['file']
+
+        # Save the file to ./uploads
+        basepath = os.path.dirname(__file__)
+        file_path = os.path.join(
+            basepath, 'uploads', secure_filename(f.filename))
+        f.save(file_path)
+
+        # Make prediction
+        with session.graph.as_default():
+            tf.keras.backend.set_session(session)
+            new_img = crop_img(file_path)
+        return new_img
+    return None
+
 @app.route('/predict', methods=['GET', 'POST'])
 def upload():
     if request.method == 'POST':
@@ -111,6 +130,7 @@ def upload():
         # Make prediction
         with session.graph.as_default():
             tf.keras.backend.set_session(session)
+            crop_img(file_path)
             preds = model_predict(file_path, model)
         return preds
     return None
