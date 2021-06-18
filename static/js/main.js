@@ -24,28 +24,6 @@ $(document).ready(function () {
         readURL(this);
     });
 
-    //preprocess
-    $('#btn-crop').click(function() {
-        var form_data = new FormData($('#upload-file')[0]);
-        
-        $('#cropimg').show();
-        $.ajax({
-            type: 'POST',
-            url: '/preprocess',
-            data: form_data,
-            contentType: false,
-            cache: false,
-            processData: false,
-            async: true,
-            success: function (data) {
-                // Get and display the image
-                $('#cropimg').css('background-image', 'url(' + data + ')');
-                console.log('Success!');
-            },
-        });
-
-    });
-
     // Predict
     $('#btn-predict').click(function () {
         var form_data = new FormData($('#upload-file')[0]);
