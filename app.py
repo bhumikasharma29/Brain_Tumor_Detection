@@ -6,7 +6,7 @@ import glob
 import re
 import numpy as np
 import configparser
-
+import cv2
 # Keras
 import tensorflow as tf
 from tensorflow.python.keras.backend import set_session
@@ -39,12 +39,45 @@ with session.graph.as_default():
 
 print('Model loaded. Check http://127.0.0.1:5000/')
 
+#Function to crop the image
+
+
+def crop_img(img_path):
+    img = image.load_img(img_path, target_size=(240, 240))
+    #Convert the img to grayscale and blur it slightly
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    gray = cv2.GaussianBlur(gray, (5, 5), 0)
+
+    #threshold the image
+    thresh = cv2.threshold(gray, 45, 255, cv2.THRESH_BINARY)[1]
+
+    #performing morphological operations dilation and erosion to remove any small regions of noise
+    thresh = cv2.erode(thresh, None, iterations=2)
+    thresh = cv2.dilate(thresh, None, iterations=2)
+
+    #find contours in the thresholded image, find the maximum one
+    cnts = cv2.findContours(
+        thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = imutils.grab_contours(cnts)
+    c = max(cnts, key=cv2.contourArea)
+
+    # Find the extreme points
+    extLeft = tuple(c[c[:, :, 0].argmin()][0])
+    extRight = tuple(c[c[:, :, 0].argmax()][0])
+    extTop = tuple(c[c[:, :, 1].argmin()][0])
+    extBot = tuple(c[c[:, :, 1].argmax()][0])
+
+    # crop new image out of the original image using the four extreme points (left, right, top, bottom)
+    new_image = image[extTop[1]:extBot[1], extLeft[0]:extRight[0]]
+
+    return new_image
 
 def model_predict(img_path, model):
     img = image.load_img(img_path, target_size=(240, 240))
 
     # Preprocessing the image
     x = image.img_to_array(img)
+
     x = x / 255
     # x = np.true_divide(x, 255)
     x = np.expand_dims(x, axis=0)
@@ -56,7 +89,6 @@ def model_predict(img_path, model):
     else:
         result = "Person has Brain Tumor"
     return result
-
 
 @app.route('/', methods=['GET'])
 def index():
