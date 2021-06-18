@@ -1,11 +1,8 @@
 from __future__ import division, print_function
 # coding=utf-8
-import sys
 import os
-import glob
-import re
 import numpy as np
-import configparser
+
 
 # Keras
 import tensorflow as tf
@@ -13,8 +10,7 @@ from tensorflow.python.keras.backend import set_session
 from keras.applications.imagenet_utils import preprocess_input, decode_predictions
 from keras.models import load_model
 from keras.preprocessing import image
-from keras.utils import CustomObjectScope
-from keras.initializers import glorot_uniform
+
 
 # Flask utils
 from flask import Flask, redirect, url_for, request, render_template
