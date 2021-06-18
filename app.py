@@ -19,6 +19,7 @@ from keras.initializers import glorot_uniform
 # Flask utils
 from flask import Flask, redirect, url_for, request, render_template
 from werkzeug.utils import secure_filename
+import waitress
 #from gevent.pywsgi import WSGIServer
 
 # Define a flask app
@@ -85,7 +86,8 @@ def upload():
 
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', port = 5000, debug=True)
-
+    app.debug = False
+    port = int(os.environ.get('PORT', 33507))
+    waitress.serve(app, port = port)
 
 #app.run(debug=True)
