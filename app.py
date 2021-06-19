@@ -25,7 +25,7 @@ from gevent.pywsgi import WSGIServer
 app = Flask(__name__)
 
 # Model saved with Keras model.save()
-MODEL_PATH = 'brain_tumor_model.h5'
+MODEL_PATH = 'my_model.h5'
 
 session = tf.Session(graph=tf.Graph())
 with session.graph.as_default():
